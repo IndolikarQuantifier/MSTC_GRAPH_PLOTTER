@@ -3,10 +3,8 @@
 #include<Windows.h>
 
 #include "../ScaleLines/ScaleLines.h"
-#include "../Errors.h"
+#include "../Error/Errors.h"
 
-#define SUCCESS            0
-#define FAIL               1
 
 #define AX_OFFSET         30
 
@@ -58,7 +56,7 @@ typedef struct tagCOORDINATEAXIS
 }COORDINATEAXIS,*PCOORDINATEAXIS,*LPCOORDINATEAXIS;
 
 
-LPCOORDINATEAXIS CreateCoOrdinateAxis();
+LPCOORDINATEAXIS CALLBACK CreateCoOrdinateAxis();
 void Destroy(void* ptr);
 void DestroyLables(LPSTR* lpLableBase);
 
@@ -71,4 +69,4 @@ status GetOrigin(const LPCOORDINATEAXIS InOrdinateAxis,LPPOINT OutOrigin);
 
 status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const LPCOORDINATEAXIS InOrdinateAxis,scrollOption option,int vPos,int hPos);
 
-status DestoryCoOrdinateAxis(LPCOORDINATEAXIS _coOrdinateAxis);
+status CALLBACK DestoryCoOrdinateAxis(LPCOORDINATEAXIS _coOrdinateAxis);

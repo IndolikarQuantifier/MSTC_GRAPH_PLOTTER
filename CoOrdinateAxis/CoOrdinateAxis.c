@@ -1,21 +1,21 @@
 #include "CoOrdinateAxis.h"
 
 
-LPCOORDINATEAXIS CreateCoOrdinateAxis()
+LPCOORDINATEAXIS CALLBACK CreateCoOrdinateAxis()
 {
 
-        LPCOORDINATEAXIS lpCoOrdinate = (LPCOORDINATEAXIS) calloc(1,sizeof(COORDINATEAXIS));
+        LPCOORDINATEAXIS lpCoOrdinate = (LPCOORDINATEAXIS) xcalloc(sizeof(COORDINATEAXIS));
         CHECK_ERROR( lpCoOrdinate == NULL,
         "Not able to allocate the CoOrdinate Axis",
         "CreateCoOrdinateAxis" );
 
-        lpCoOrdinate->Origin = (LPPOINT) calloc(1,sizeof(POINT));
-        lpCoOrdinate->XAxisEnd = (LPPOINT) calloc(1,sizeof(POINT));
-        lpCoOrdinate->YAxisEnd = (LPPOINT) calloc(1,sizeof(POINT));
+        lpCoOrdinate->Origin = (LPPOINT) xcalloc(sizeof(POINT));
+        lpCoOrdinate->XAxisEnd = (LPPOINT) xcalloc(sizeof(POINT));
+        lpCoOrdinate->YAxisEnd = (LPPOINT) xcalloc(sizeof(POINT));
 
         
-        // lpCoOrdinate->TitleX = (LPSTR) calloc(1,_coOrdinateAxis->XTitleLength);
-        // lpCoOrdinate->TitleY = (LPSTR) calloc(1,_coOrdinateAxis->YTileLength);
+        // lpCoOrdinate->TitleX = (LPSTR) xcalloc(1,_coOrdinateAxis->XTitleLength);
+        // lpCoOrdinate->TitleY = (LPSTR) xcalloc(1,_coOrdinateAxis->YTileLength);
 
         return lpCoOrdinate;
 }
@@ -73,7 +73,7 @@ status SetCoOrdinateParamters(LPCOORDINATEAXIS lpCoOrdinate,const LPCOORDINATEAX
     if(opt & AX_TITLE_X)
     {
         int nTitleLen = strnlen_s(InCoOrdinateAxis->TitleX,MAX_LABLE_NAME);
-        lpCoOrdinate->TitleX = (CHAR*) calloc(1,nTitleLen);
+        lpCoOrdinate->TitleX = (CHAR*) xcalloc(nTitleLen);
         lpCoOrdinate->XTitleLength = nTitleLen;
 
         CHECK_ERROR(lpCoOrdinate->TitleX == NULL,
@@ -91,7 +91,7 @@ status SetCoOrdinateParamters(LPCOORDINATEAXIS lpCoOrdinate,const LPCOORDINATEAX
     {   
 
         int nTitleLen = strnlen_s(InCoOrdinateAxis->TitleY,MAX_LABLE_NAME);
-        lpCoOrdinate->TitleY = (CHAR*) calloc(1,nTitleLen);
+        lpCoOrdinate->TitleY = (CHAR*) xcalloc(nTitleLen);
         lpCoOrdinate->YTileLength = nTitleLen;
 
         CHECK_ERROR(lpCoOrdinate->TitleY == NULL,
@@ -114,7 +114,7 @@ status SetCoOrdinateParamters(LPCOORDINATEAXIS lpCoOrdinate,const LPCOORDINATEAX
         //     DestroyLables(lpCoOrdinate->lables);
 
         // size_t length = sizeof(InCoOrdinateAxis->lables) / sizeof(InCoOrdinateAxis->lables[0]);
-        // lpCoOrdinate->lables = (LPSTR*) calloc(length,sizeof(LPSTR));
+        // lpCoOrdinate->lables = (LPSTR*) xcalloc(length,sizeof(LPSTR));
         // CHECK_ERROR(lpCoOrdinate->lables == NULL,
         //         "Not able allocate the message",
         //         "CreateCoOrdinateAxis()"
@@ -123,7 +123,7 @@ status SetCoOrdinateParamters(LPCOORDINATEAXIS lpCoOrdinate,const LPCOORDINATEAX
         // for(int i=0;i<length;i++)
         // {
         //     size_t lableLength = strnlen_s(InCoOrdinateAxis->lables[i],MAX_LABLE_NAME);
-        //     lpCoOrdinate->lables[i] = (PCHAR)calloc(lableLength,sizeof(CHAR));
+        //     lpCoOrdinate->lables[i] = (PCHAR)xcalloc(lableLength,sizeof(CHAR));
         //     CHECK_ERROR(lpCoOrdinate->lables[i] == NULL
         //                 ,"Not able to allocate the string"
         //                 ,"CreateCoOrdinateAxis()"
@@ -297,7 +297,7 @@ status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const LPCOORDINATEAXIS InOrdin
     return SUCCESS;
 }
 
-status DestoryCoOrdinateAxis(LPCOORDINATEAXIS _coOrdinateAxis)
+status CALLBACK DestoryCoOrdinateAxis(LPCOORDINATEAXIS _coOrdinateAxis)
 {
     if(_coOrdinateAxis != NULL)
     {

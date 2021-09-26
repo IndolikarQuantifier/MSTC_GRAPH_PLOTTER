@@ -1,14 +1,14 @@
 #include "ScaleLines.h"
 
 
-LPSCALELINE CreateScaleLines()
+LPSCALELINE CALLBACK CreateScaleLines()
 {
-    LPSCALELINE lpScaleLine = (LPSCALELINE) calloc(1,sizeof(SCALELINE));
-    lpScaleLine->StartPoint = (LPPOINT) calloc(1,sizeof(POINT));
-    lpScaleLine->EndPoint   = (LPPOINT) calloc(1,sizeof(POINT));
+    LPSCALELINE lpScaleLine = (LPSCALELINE) xcalloc(sizeof(SCALELINE));
+    lpScaleLine->StartPoint = (LPPOINT) xcalloc(sizeof(POINT));
+    lpScaleLine->EndPoint   = (LPPOINT) xcalloc(sizeof(POINT));
 
     lpScaleLine->ScaleColor = RGB(236,228,228);
-    lpScaleLine->hBrush = (HBRUSH*) calloc(1,sizeof(HBRUSH));
+    lpScaleLine->hBrush = (HBRUSH*) xcalloc(sizeof(HBRUSH));
 
     lpScaleLine->hBrush[0] = CreateSolidBrush(lpScaleLine->ScaleColor);
 
@@ -96,7 +96,7 @@ void DrawScaleLines(HDC hdc ,PPAINTSTRUCT ps,const LPSCALELINE _lpScaleLine,Opti
     {
             // SelectObject(hdc,_lpScaleLine->hBrush[0]);
 
-            // P1.x will change for Horizontal Scroll
+            
             MoveToEx(hdc,P1.x,i,NULL);
             LineTo(hdc,ps->rcPaint.right,i);
 
@@ -108,7 +108,7 @@ void DrawScaleLines(HDC hdc ,PPAINTSTRUCT ps,const LPSCALELINE _lpScaleLine,Opti
     
 }
 
-status DestoryScaleLines(LPSCALELINE lpScaleLine)
+status CALLBACK DestoryScaleLines(LPSCALELINE lpScaleLine)
 {
     if(lpScaleLine == NULL)
         return FAIL;

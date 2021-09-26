@@ -3,7 +3,7 @@
 
 #include "../CoOrdinateAxis/CoOrdinateAxis.h"
 #include "../Bars/Bars.h"
-#include "../Errors.h"
+#include "../Error/Errors.h"
 
 #define GAP 25
 #define BARWDTH 96
@@ -32,7 +32,7 @@ typedef struct tagSIMPLEBARGRAPH
 }SIMPLEBARGRAPH,*PSIMPLEBARGRAPH,*LPSIMPLEBARGRAPH;
 
 
-HWND Init(HINSTANCE hInstance,HWND hParentWnd);
+
 int CreateBarGraph(HWND hWnd,LPSIMPLEBARGRAPH* lpSimpleBarGraph,unit* Heights,LPCOLORREF lpColor,unit scale,size_t iSize,const LPSTR xTitle,const LPSTR yTitle,const CHAR** lables);
 // void UpdateBarGraph()
 
@@ -40,6 +40,8 @@ int CreateBarGraph(HWND hWnd,LPSIMPLEBARGRAPH* lpSimpleBarGraph,unit* Heights,LP
 
 status CreateDataBars(LPSIMPLEBARGRAPH lpSimpleBarGraph,unit* barData,LPCOLORREF lpColor,const CHAR** lables,size_t iSize);
 status ReLocateBars(LPSIMPLEBARGRAPH lpSimpleBarGraph);
+
+LRESULT CALLBACK WndSimpleBarGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
 
 void DrawSimpleBarGraph(HDC hdc,LPPAINTSTRUCT ps,LPSIMPLEBARGRAPH lpSimpleBarGraph);
 void DestroySimpleBarGraph(LPSIMPLEBARGRAPH lpSimpleBarGraph);

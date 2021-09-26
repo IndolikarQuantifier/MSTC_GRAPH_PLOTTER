@@ -1,14 +1,14 @@
 #include "Bars.h"
 #include<stdio.h>
 
-LPVECBARS CreateBars(CNT _cnt)
+LPVECBARS CALLBACK CreateBars(CNT _cnt)
 {
     LPVECBARS lpVecBars = NULL;
     lpVecBars = (LPVECBARS) realloc(lpVecBars,sizeof(VECBARS));
     CHECK_ERROR(lpVecBars == NULL,"Not able to allocate the vector of bars","CreateBars()");
 
-    lpVecBars->lpBar = (LPBAR) calloc(_cnt,sizeof(BAR));
-    lpVecBars->hBrushes = (HBRUSH*) calloc(_cnt,sizeof(HBRUSH));
+    lpVecBars->lpBar = (LPBAR) xcalloc(_cnt * sizeof(BAR));
+    lpVecBars->hBrushes = (HBRUSH*) xcalloc(_cnt * sizeof(HBRUSH));
     lpVecBars->iSize = _cnt;
     lpVecBars->DisplayRect = NULL;
 
@@ -105,11 +105,7 @@ status UpdateWidth(LPVECBARS _lpVecBars,EditFlags options,unsigned long int valu
     return SUCCESS;
 }
 
-/*
-        TODO :
 
-                Optimise the BAR's VSCROLL and HSCROLL
-*/
 
 status DrawBars(HDC hdc,PAINTSTRUCT *ps,LPVECBARS _lpVecBars,scrollOption option,int vPos,LPSCROLLINFO hScrollInfo)
 {
@@ -223,7 +219,7 @@ status SetDisplayRectBuffer(LPVECBARS _lpVecBars,int nSize)
 
 LPEXTRA SetExtras(unit* InArr,size_t _length,int _start,int _end)
 {
-    LPEXTRA lpExtra = (LPEXTRA) calloc(1,sizeof(EXTRA));
+    LPEXTRA lpExtra = (LPEXTRA) xcalloc(sizeof(EXTRA));
 
     CHECK_ERROR(lpExtra == NULL,"Not able to create Extra","SetExtra");
 
@@ -235,7 +231,7 @@ LPEXTRA SetExtras(unit* InArr,size_t _length,int _start,int _end)
     return lpExtra;
 }
 
-status DestoryBars(LPVECBARS _lpVecBars)
+status CALLBACK DestoryBars(LPVECBARS _lpVecBars)
 {
     if(_lpVecBars != NULL)
         return FAIL;

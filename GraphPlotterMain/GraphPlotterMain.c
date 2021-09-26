@@ -115,11 +115,11 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     ShowWindow(hWnd,nShowCmd);
     UpdateWindow(hWnd);
 
-    HWND hWnd1 = Init(hInstance,hWnd);
+    HWND hWnd1 = Init(hInstance,hWnd,WndSimpleBarGraphProc,"This is ClassName","Bar Graph !!!");
     // HWND hWnd2 = Init(hInstance,hWnd);
 
-    unit* heights = (unit*) calloc(12,sizeof(unit));
-    LPCOLORREF lpColor = (LPCOLORREF) calloc(12,sizeof(COLORREF));
+    unit* heights = (unit*) xcalloc(12 * sizeof(unit));
+    LPCOLORREF lpColor = (LPCOLORREF) xcalloc(12 * sizeof(COLORREF));
     CHAR* lables[] = {
         "2000",
         "2001",

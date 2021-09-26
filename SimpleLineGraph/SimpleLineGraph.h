@@ -4,13 +4,17 @@
 #include<stdlib.h>
 #include "../Lines/Line.h"
 #include "../CoOrdinateAxis/CoOrdinateAxis.h"
+#include "../Error/Errors.h"
 
-#define SUCCESS 1
-#define FAILURE 0
+#define LINE_GRAPH_SAVE 10
+#define DEFAULT_GENESIS 96
 
 typedef int status;
 typedef struct tagSIMPLELINEGRAPH
 {
+    int genesisPoint;
+    int maxPoints;
+    int pointGap;
     LINE* Lines;
     LPCOORDINATEAXIS lpCoOrdinateAxis;
     int nSize;

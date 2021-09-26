@@ -1,26 +1,32 @@
 #pragma once
 
 #include<Windows.h>
-#include "../Errors.h"
+#include "../Error/Errors.h"
 
-#define SUCCESS 1
-#define FAILURE 0
+#define SUCCESS 0
+#define FAILURE 1
 
-#define LNE_POINTS 0x01
-#define LNE_COLOR  0x02
+#define LNE_START 0x01
+#define LNE_END   0x02
+#define LNE_COLOR 0x04
 
-typedef int status;
-typedef int len_t;
-typedef int option;
+#define LNE_HSCROLL 0x08
+#define LNE_VSCROLL 0x10
+
+typedef int Status;
+typedef int Options;
 
 typedef struct tagLINE
 {
-    LPPOINT pPoints;
-    COLORREF colLine;
-    int nSize;
-}LINE,*LPLINE,PLINE;
+    POINT StartPoint;
+    POINT EndPoint;
 
-LPLINE CreateLine();
-status SetLine(LPLINE lpLine,const LPLINE InLine,option options);
-status DrawLine(HDC hdc,LPPAINTSTRUCT ps,LPLINE line,LPSCROLLINFO vScroll,LPSCROLLINFO hScroll);
-status DestoryLine(LPLINE lpLine);
+    COLORREF LineColor;
+}LINE,*PLINE,*LPLINE;
+
+
+PLINE CreateLine();
+Status UpdateLine(PLINE hLine,Options options,PLINE hInLine);
+Status DeleteLine(PLINE hLine);
+
+Status DrawLine(PLINE hLine,Options option);

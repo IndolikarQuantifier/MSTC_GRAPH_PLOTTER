@@ -1,16 +1,11 @@
 #pragma once
 
 #include<Windows.h>
-#include "../Errors.h"
+#include "../Error/Errors.h"
 
 #define DEFAULT_WIDTH       100
 
 
-#define SUCCESS              0
-
-
-
-#define FAIL                1
 #define MAX_LABLE_LENGTH    20
 #define LBL_OFFSET          10
 
@@ -69,7 +64,7 @@ typedef struct tagVECTORBARS
 
 
 status InitBars(LPVECBARS _lpVecBars,const PRECT InlpRect,const CHAR** lables,const LPCOLORREF InlpColor,size_t _totRect);
-LPVECBARS CreateBars(CNT _cnt);
+LPVECBARS CALLBACK CreateBars(CNT _cnt);
 
 status UpdateHeight(LPVECBARS _lpVecBars,EditFlags options,unsigned long int value,const LPEXTRA InExtra);
 status UpdateWidth(LPVECBARS _lpVecBars,EditFlags options,unsigned long int value,const LPEXTRA InExtra);
@@ -81,5 +76,5 @@ LPEXTRA SetExtras(unit* InArr,size_t _length,int _start,int _end);
 
 
 status DrawBars(HDC hdc,PAINTSTRUCT *ps,LPVECBARS _lpVecBars,scrollOption option,int vPos,LPSCROLLINFO hScrollInfo);
-status DestoryBars(LPVECBARS _lpVecBars);
+status CALLBACK DestoryBars(LPVECBARS _lpVecBars);
 status DestroyExtra(LPEXTRA _lpExtra);
