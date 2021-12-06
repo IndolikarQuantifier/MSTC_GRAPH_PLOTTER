@@ -98,10 +98,10 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     ShowWindow(hWnd,nShowCmd);
     UpdateWindow(hWnd);
 
-    HWND hWnd1 = Init(hInstance,hWnd);
+    HWND hWnd1 = Init(hInstance,hWnd,WndSimpleLineGraphProc,"Line Graph","Wnd Line Caption");
     // HWND hWnd2 = Init(hInstance,hWnd);
 
-    int** heights = (int**) calloc(16,sizeof(int));
+    int* heights = (int*) calloc(16,sizeof(int));
     int length[4] = {4,4,6,2};
     LPCOLORREF lpColor = (LPCOLORREF) calloc(1,sizeof(COLORREF));
     // CHAR* lables[] = {
@@ -119,43 +119,43 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     //     "2011"
     // };
 
-    heights[0][0] = 40;
+    heights[0] = 10;
 
-    heights[0][1] = 50;
+    heights[1] = 20;
 
-    heights[0][2] = 40;
+    heights[2] = 30;
 
-    heights[0][3] = 70;
+    heights[3] = 100;
 
     // --- 
 
-    heights[1][0] = 40;
+    heights[4] = 40;
 
-    heights[1][1] = 50;
+    heights[5] = 20;
 
-    heights[1][2] = 40;
+    heights[6] = 10;
 
-    heights[1][3] = 70;
-
-    // ---
-
-    heights[2][0] = 40;
-
-    heights[2][1] = 50;
-
-    heights[2][2] = 40;
-
-    heights[2][3] = 70;
-
-    heights[2][4] = 80;
-
-    heights[2][5] = 100;
+    heights[7] = 70;
 
     // ---
 
-    heights[3][0] = 40;
+    heights[8] = 40;
+
+    heights[9] = 50;
+
+    heights[10] = 40;
+
+    heights[11] = 30;
+
+    heights[12] = 10;
+
+    heights[13] = 30;
+
+    // ---
+
+    heights[14] = 40;
  
-    heights[3][1] = 80;
+    heights[15] = 80;
 
     lpColor[0] = RGB(255,255,0);
     
@@ -163,8 +163,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
                     hWnd1,
                     &lpSimpleLineGraph,
                     heights,
-                    1,
-                    length,
+                    16,
                     10,
                     lpColor
                 );

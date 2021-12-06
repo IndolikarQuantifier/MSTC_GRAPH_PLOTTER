@@ -5,7 +5,7 @@
 
 typedef unsigned long int unit;
 typedef int status;
-typedef unsigned long long int Options;
+typedef unsigned long int Options;
 
 #define SCLE_START_PT    0x1
 #define SCLE_END_PT      0x2

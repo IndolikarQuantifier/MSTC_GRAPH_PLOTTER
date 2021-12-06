@@ -9,11 +9,24 @@ LPVECBARS CALLBACK CreateBars(CNT _cnt)
 
     lpVecBars->lpBar = (LPBAR) xcalloc(_cnt * sizeof(BAR));
     lpVecBars->hBrushes = (HBRUSH*) xcalloc(_cnt * sizeof(HBRUSH));
+    lpVecBars->DisplayBuffer = CreateDCLL();
     lpVecBars->iSize = _cnt;
-    lpVecBars->DisplayRect = NULL;
 
     return lpVecBars;
 };
+
+LPDISPLAYBARATTR CreateDisplayBarAttr(LONG left,LONG right)
+{
+    LPDISPLAYBARATTR BarAttribute = (LPDISPLAYBARATTR) xcalloc(sizeof(DISPLAYBARATTR));
+    BarAttribute->rect.left = left;
+    BarAttribute->rect.right = right;
+
+    BarAttribute->link.next = NULL;
+    BarAttribute->link.prev = NULL;
+
+    return BarAttribute;
+}
+
 
 /*
 
@@ -26,7 +39,6 @@ LPVECBARS CALLBACK CreateBars(CNT _cnt)
         2. The array of RECTS that should be the bars of graph
         3. Size of that array
 */ 
-
 status InitBars(LPVECBARS _lpVecBars,const PRECT InlpRect,const CHAR** lables,const LPCOLORREF InlpColor,size_t _totRect)
 {
 
@@ -113,8 +125,6 @@ status DrawBars(HDC hdc,PAINTSTRUCT *ps,LPVECBARS _lpVecBars,scrollOption option
     RECT rcTmp;
     RECT rcOverlap;
 
-    PRECT pRect = _lpVecBars->DisplayRect;
-
     CopyRect(&rcTmp,&(_lpVecBars->lpBar[0]._box));
 
     int width = rcTmp.right - rcTmp.left;
@@ -130,18 +140,26 @@ status DrawBars(HDC hdc,PAINTSTRUCT *ps,LPVECBARS _lpVecBars,scrollOption option
 
     if(option & BR_HSCROLL)
     {
+        LPNODE p_run = NULL;
+        p_run = _lpVecBars->DisplayBuffer->next;
+
         for(int i = hScrollInfo->nPos,j=0;
                 j < hScrollInfo->nPage && i < _lpVecBars->iSize;
                 i++,j++
             )
         {
 
-            CopyRect(&(_lpVecBars->DisplayRect[j]),&(_lpVecBars->lpBar[j]._box));
+            // CopyRect(&(_lpVecBars->DisplayRect[j]),&(_lpVecBars->lpBar[j]._box));
 
-            _lpVecBars->DisplayRect[j].top = _lpVecBars->lpBar[i]._box.top;
+            // _lpVecBars->DisplayRect[j].top = _lpVecBars->lpBar[i]._box.top;
 
-            _lpVecBars->DisplayRect[j].bottom = _lpVecBars->lpBar[i]._box.bottom;
-            
+            // _lpVecBars->DisplayRect[j].bottom = _lpVecBars->lpBar[i]._box.bottom;
+
+            LPDISPLAYBARATTR DisplayBar = CONTAINER_OF(p_run,DISPLAYBARATTR,link);
+            DisplayBar->rect.top = _lpVecBars->lpBar[i]._box.top;
+            DisplayBar->rect.bottom = _lpVecBars->lpBar[i]._box.bottom;
+
+            p_run = p_run->next;
         }
     }
 
@@ -153,25 +171,39 @@ status DrawBars(HDC hdc,PAINTSTRUCT *ps,LPVECBARS _lpVecBars,scrollOption option
 
         */
 
+        LPNODE p_run = NULL;
+        p_run = _lpVecBars->DisplayBuffer->next;
 
         for(int i=hScrollInfo->nPos,j=0;i<nSize;i++,j++)
         {
-            _lpVecBars->DisplayRect[j].top = 
-                _lpVecBars->DisplayRect[j].top + (RESY * vPos) < 0 ? 0 : _lpVecBars->DisplayRect[j].top + (RESY * vPos);
-            // _lpVecBars->DisplayRect[j].bottom = _lpVecBars->DisplayRect[j].bottom + (RESY * vPos);
-            // MessageBox((HWND)NULL,"VSCROLL","asda",MB_ICONERROR);
-            if(IntersectRect(&rcOverlap,&(ps->rcPaint),&(_lpVecBars->DisplayRect[j])))
+            LPDISPLAYBARATTR DisplayBar = NULL;
+            DisplayBar = CONTAINER_OF(p_run,DISPLAYBARATTR,link);
+
+            // _lpVecBars->DisplayRect[j].top = 
+            //     _lpVecBars->DisplayRect[j].top + (RESY * vPos) < 0 ? 0 : _lpVecBars->DisplayRect[j].top + (RESY * vPos);
+            
+            DisplayBar->rect.top = DisplayBar->rect.top + (RESY * vPos) < 0 ? 0 : DisplayBar->rect.top + (RESY * vPos);
+
+            if(IntersectRect(&rcOverlap,&(ps->rcPaint),&(DisplayBar->rect)))
             {
-                Rectangle(hdc,_lpVecBars->DisplayRect[j].left,_lpVecBars->DisplayRect[j].top,_lpVecBars->DisplayRect[j].right,_lpVecBars->DisplayRect[j].bottom);
-                FillRect(hdc,&(_lpVecBars->DisplayRect[j]),_lpVecBars->hBrushes[i]);
+                Rectangle(hdc,DisplayBar->rect.left,DisplayBar->rect.top,DisplayBar->rect.right,DisplayBar->rect.bottom);
+                FillRect(hdc,&(DisplayBar->rect),_lpVecBars->hBrushes[i]);
             }
 
-            int Xmid = (    _lpVecBars->DisplayRect[j].left
+            // if(IntersectRect(&rcOverlap,&(ps->rcPaint),&(_lpVecBars->DisplayRect[j])))
+            // {
+            //     Rectangle(hdc,_lpVecBars->DisplayRect[j].left,_lpVecBars->DisplayRect[j].top,_lpVecBars->DisplayRect[j].right,_lpVecBars->DisplayRect[j].bottom);
+            //     FillRect(hdc,&(_lpVecBars->DisplayRect[j]),_lpVecBars->hBrushes[i]);
+            // }
+
+            int Xmid = (    DisplayBar->rect.left
                                             + 
-                                _lpVecBars->DisplayRect[j].right
+                                DisplayBar->rect.right
                         ) / 2;
             SetTextAlign(hdc,TA_CENTER);
             TextOut(hdc,Xmid,_lpVecBars->lpBar[i]._box.bottom + LBL_OFFSET,_lpVecBars->lpBar[i].lable,strnlen_s(_lpVecBars->lpBar[i].lable,MAX_LABLE_LENGTH));
+
+            p_run = p_run->next;
         }
     }
 
@@ -193,14 +225,24 @@ status DrawBars(HDC hdc,PAINTSTRUCT *ps,LPVECBARS _lpVecBars,scrollOption option
 
 status SetDisplayRectBuffer(LPVECBARS _lpVecBars,int nSize)
 {
-    // if(_lpVecBars->DisplayRect != NULL)
-    // {
-    //     free(_lpVecBars->DisplayRect);
-    //     _lpVecBars->DisplayRect = NULL;
-    // }
-    PRECT pRect = (PRECT) realloc(_lpVecBars->DisplayRect,nSize * sizeof(RECT));
-    _lpVecBars->DisplayRect = pRect;
-    ZeroMemory(pRect,nSize * sizeof(RECT));
+
+    int genesis = _lpVecBars->lpBar[0]._box.left;
+    int width = _lpVecBars->lpBar[0]._box.right - _lpVecBars->lpBar[0]._box.left;
+
+    int gap = _lpVecBars->lpBar[1]._box.left - _lpVecBars->lpBar[0]._box.right;
+    
+    for(size_t i = _lpVecBars->DisplayBuffer->nr_elements;i < nSize;i++)
+    {
+        LONG left = genesis + (i * (width + gap));
+        LONG right = left + width;
+
+        InsertEnd(_lpVecBars->DisplayBuffer,&(CreateDisplayBarAttr(left,right)->link));
+    }
+
+    
+    // PRECT pRect = (PRECT) realloc(_lpVecBars->DisplayRect,nSize * sizeof(RECT));
+    // _lpVecBars->DisplayRect = pRect;
+    // ZeroMemory(pRect,nSize * sizeof(RECT));
 
     // for(int i=0;i<nSize;i++)
     // {
@@ -236,6 +278,8 @@ status CALLBACK DestoryBars(LPVECBARS _lpVecBars)
     if(_lpVecBars != NULL)
         return FAIL;
 
+    DestoryDCLL(&(_lpVecBars->DisplayBuffer),DestroyDisplayBarAttr);
+
     for(int i=0;i<_lpVecBars->iSize;i++)
     {
         free(&(_lpVecBars->lpBar[i]._box));
@@ -243,14 +287,12 @@ status CALLBACK DestoryBars(LPVECBARS _lpVecBars)
         DeleteObject(_lpVecBars->hBrushes[i]);
     }
 
-    free(_lpVecBars->DisplayRect);
     free(_lpVecBars->lpBar);
     free(_lpVecBars->hBrushes);
     free(_lpVecBars);
 
     _lpVecBars->lpBar = NULL;
     _lpVecBars        = NULL;
-    _lpVecBars->DisplayRect = NULL;
 
     return SUCCESS;
 }
@@ -265,6 +307,15 @@ status DestroyExtra(LPEXTRA _lpExtra)
 
     _lpExtra->arr = NULL;
     _lpExtra = NULL;
+
+    return SUCCESS;
+}
+
+status_t DestroyDisplayBarAttr(LPNODE rm_node)
+{
+    LPDISPLAYBARATTR lpDisplayBarArr = NULL;
+    lpDisplayBarArr = CONTAINER_OF(rm_node,DISPLAYBARATTR,link);
+    free(lpDisplayBarArr);
 
     return SUCCESS;
 }

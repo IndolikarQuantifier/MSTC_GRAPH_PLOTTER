@@ -36,6 +36,7 @@ typedef struct tagAXIS
 {
     POINT start;
     POINT end;
+    
 }AXIS,*PAXIS,*LPAXIS;
 
 typedef struct tagCOORDINATEAXIS
@@ -61,6 +62,7 @@ void Destroy(void* ptr);
 void DestroyLables(LPSTR* lpLableBase);
 
 status SetCoOrdinateParamters(LPCOORDINATEAXIS lpCoOrdinate,const LPCOORDINATEAXIS InCoOrdinateAxis,options opt);
+
 
 
 

@@ -197,16 +197,16 @@ status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const LPCOORDINATEAXIS InOrdin
     {
 
         /*
-            1. Get the rcPaint RECT.
+    5        1. Get the rcPaint RECT.
 
             2. Let P1 and P2 be two points of the Y-axis and P1 is near to Origin.
-
+    b
             so at any time (WM_PAINT or WM_VSCROLL) P1 and P2 will follow the following rule
 
             if rcPaint.bottom < Origin.y (considering scroll position)
                 P1.y = rcPaint.bottom;
             if rcPaint.bottom >= Origin.y (considering scroll position)
-                P1.y = Origin.Y;
+    a            P1.y = Origin.Y;
 
             if rcPaint.top <= YAxisEnd.y (considering the scroll position)
                 P2.y = YAxisEnd.y;

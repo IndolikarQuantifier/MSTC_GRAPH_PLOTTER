@@ -2,6 +2,7 @@
 
 #include<Windows.h>
 #include "../Error/Errors.h"
+#include "../GenericDCLL/GDCLL.h"
 
 #define DEFAULT_WIDTH       100
 
@@ -31,6 +32,13 @@ typedef unsigned long int InitFlags;
 typedef unsigned long int unit;
 typedef unsigned long int scrollOption;
 
+typedef struct tagDISPLAYBARATTR
+{
+    RECT rect;
+
+    NODE link;
+
+}DISPLAYBARATTR,*PDISPLAYBARATTR,*LPDISPLAYBARATTR;
 typedef struct tagEXTRA
 {
     unit *arr;
@@ -57,11 +65,15 @@ typedef struct tagVECTORBARS
 {
     LPBAR lpBar;
     HBRUSH* hBrushes;
-    PRECT DisplayRect;
+
+    LPDCLL DisplayBuffer;
+
     size_t iSize;
     
 }VECBARS,*PVECBARS,*NPVECBARS,*LPVECBARS;
 
+LPDISPLAYBARATTR CreateDisplayBarAttr(LONG left,LONG right);
+status_t DestroyDisplayBarAttr(LPNODE rm_node);
 
 status InitBars(LPVECBARS _lpVecBars,const PRECT InlpRect,const CHAR** lables,const LPCOLORREF InlpColor,size_t _totRect);
 LPVECBARS CALLBACK CreateBars(CNT _cnt);
