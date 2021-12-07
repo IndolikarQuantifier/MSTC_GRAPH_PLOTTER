@@ -2,10 +2,10 @@
 
 #define MEMORY_NOT_FOUND BST_KEY_NOT_FOUND
 
-bst_t* GetResourceAllocator();
+static bst_t* GetResourceAllocator();
 key_t GenerateKey(unsigned long int seed);
 status_t GetGraphResource(key_t key,bst_node_t** OutNode);
-
+status_t Insert(bst_node_t* new_node);
 #define GraphResourceAlloc(type,mem,nr_bytes,current_context,outKey,destroy,show) do{\
                                     type* inStruct = (type*) xcalloc(nr_bytes);\
                                     current_context = inStruct;\
@@ -15,5 +15,5 @@ status_t GetGraphResource(key_t key,bst_node_t** OutNode);
                                     inStruct->mem.key = _Inkey;\
                                     inStruct->mem.doFree = destroy;\
                                     inStruct->mem.doShow = show;\
-                                    insert_bst(GetResourceAllocator(),&(inStruct->mem));\
+                                    Insert(&(inStruct->mem));\
                                 }while(0)

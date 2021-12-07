@@ -34,6 +34,12 @@ status_t GetGraphResource(key_t key,bst_node_t** OutNode)
     return SUCCESS;
 }
 
+status_t Insert(bst_node_t* new_node)
+{
+    insert_bst(GetResourceAllocator(),new_node);
+    return SUCCESS;
+}
+
 // int main(void)
 // {
 //     struct A* inA;

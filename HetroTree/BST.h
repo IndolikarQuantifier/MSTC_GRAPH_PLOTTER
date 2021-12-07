@@ -40,7 +40,7 @@ struct node
 
 bst_t* create_bst(void);
 status_t insert_bst(bst_t* p_bst,bst_node_t* p_new_node);
-status_t remove_bst(bst_t* p_bst,key_t key);
+status_t remove_bst(bst_t* p_bst,key_t key,bst_node_t* rm_node);
 status_t search_key(bst_t* p_bst,key_t key,bst_node_t** out_node);
 status_t show(bst_t* p_bst,char* msg);
 
