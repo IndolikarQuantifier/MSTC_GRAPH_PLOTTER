@@ -1,9 +1,14 @@
 #include "ScaleLines.h"
 
 
-LPSCALELINE CALLBACK CreateScaleLines()
+key_t CALLBACK CreateScaleLines()
 {
-    LPSCALELINE lpScaleLine = (LPSCALELINE) xcalloc(sizeof(SCALELINE));
+    LPSCALELINE lpScaleLine = NULL;//(LPSCALELINE) xcalloc(sizeof(SCALELINE));
+    key_t scaleLineKey;
+
+    GraphResourceAlloc(SCALELINE,treelink,sizeof(SCALELINE),lpScaleLine,scaleLineKey,DestoryScaleLines,NULL);
+
+
     lpScaleLine->StartPoint = (LPPOINT) xcalloc(sizeof(POINT));
     lpScaleLine->EndPoint   = (LPPOINT) xcalloc(sizeof(POINT));
 
@@ -17,11 +22,18 @@ LPSCALELINE CALLBACK CreateScaleLines()
         "CreateScaleLines"
     );
 
-    return lpScaleLine;
+    return scaleLineKey;
 }
 
-status SetScaleLines(LPSCALELINE _lpScaleLine,Options option,const LPSCALELINE InScaleLines)
+status SetScaleLines(key_t hScaleLine,Options option,const LPSCALELINE InScaleLines)
 {
+
+    LPSCALELINE _lpScaleLine = NULL;
+    bst_node_t* tree_node = NULL;
+
+    GetGraphResource(hScaleLine,&tree_node);
+    _lpScaleLine = CONTAINER_OF(tree_node,SCALELINE,treelink);
+
     if(_lpScaleLine == NULL)
         return FAIL;
 
@@ -45,8 +57,14 @@ status SetScaleLines(LPSCALELINE _lpScaleLine,Options option,const LPSCALELINE I
     return SUCCESS;
 }
 
-void DrawScaleLines(HDC hdc ,PPAINTSTRUCT ps,const LPSCALELINE _lpScaleLine,Options option,int pos)
+void DrawScaleLines(HDC hdc ,PPAINTSTRUCT ps,const key_t hScaleLine,Options option,int pos)
 {
+
+    LPSCALELINE _lpScaleLine = NULL;
+    bst_node_t* tree_node = NULL;
+
+    GetGraphResource(hScaleLine,&tree_node);
+    _lpScaleLine = CONTAINER_OF(tree_node,SCALELINE,treelink);
 
     static CHAR buff[100];
     static TEXTMETRIC tm;
@@ -108,8 +126,11 @@ void DrawScaleLines(HDC hdc ,PPAINTSTRUCT ps,const LPSCALELINE _lpScaleLine,Opti
     
 }
 
-status CALLBACK DestoryScaleLines(LPSCALELINE lpScaleLine)
+status CALLBACK DestoryScaleLines(bst_node_t* tree_node)
 {
+    LPSCALELINE lpScaleLine = NULL;
+    lpScaleLine = CONTAINER_OF(tree_node,SCALELINE,treelink);
+
     if(lpScaleLine == NULL)
         return FAIL;
         

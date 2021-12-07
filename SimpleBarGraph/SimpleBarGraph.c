@@ -82,10 +82,11 @@ status CreateDataBars(LPSIMPLEBARGRAPH lpSimpleBarGraph,unit* barData,LPCOLORREF
     // static CHAR buff[1000];
     // wsprintf(buff,"Resolution : %d",RESOLUTOIN_Y);
     // MessageBox((HWND)NULL,"Res",buff,MB_ICONERROR);
-
+    COORDINATEAXIS tmpCoOrdinateAxis;
+    GetScale(lpSimpleBarGraph->lpCoOrdinateAxis,&tmpCoOrdinateAxis);
     for(int i=0;i<iSize;i++)
     {
-        double height = (((barData[i] / lpSimpleBarGraph->lpCoOrdinateAxis->scale) * 1.0) * RESOLUTOIN_Y);
+        double height = (((barData[i] / tmpCoOrdinateAxis.scale) * 1.0) * RESOLUTOIN_Y);
         // wsprintf(buff,"barData : %d scale :%d Res : %d height : %d",barData[i],lpSimpleBarGraph->lpCoOrdinateAxis->scale,RESOLUTOIN_Y,height);
         // MessageBox((HWND)NULL,buff,"height",MB_ICONERROR);
         SetRect((pRect + i),0,0,96,height);
@@ -101,7 +102,11 @@ status CreateDataBars(LPSIMPLEBARGRAPH lpSimpleBarGraph,unit* barData,LPCOLORREF
 
 status ReLocateBars(LPSIMPLEBARGRAPH lpSimpleBarGraph)
 {
-    LPVECBARS lpVecBars = lpSimpleBarGraph->lpVecBars;
+    LPVECBARS lpVecBars = NULL;
+    bst_node_t* treenode = NULL;
+
+    GetGraphResource(lpSimpleBarGraph->lpVecBars,&(treenode));
+    lpVecBars = CONTAINER_OF(treenode,VECBARS,treelink);
 
     POINT origin;
     GetOrigin(lpSimpleBarGraph->lpCoOrdinateAxis,&origin);
@@ -136,13 +141,14 @@ void DestroySimpleBarGraph(LPSIMPLEBARGRAPH lpSimpleBarGraph)
 {
     if(lpSimpleBarGraph != NULL)
     {
-        DestoryCoOrdinateAxis(lpSimpleBarGraph->lpCoOrdinateAxis);
-        DestoryBars(lpSimpleBarGraph->lpVecBars);
+        // DestoryCoOrdinateAxis(lpSimpleBarGraph->lpCoOrdinateAxis);
+        
+        // DestoryBars(lpSimpleBarGraph->lpVecBars);
         // DestoryScaleLines(lpSimpleBarGraph->lpScaleLine);
         free(lpSimpleBarGraph);
 
-        lpSimpleBarGraph->lpVecBars         = NULL;
-        lpSimpleBarGraph->lpCoOrdinateAxis  = NULL;
+        lpSimpleBarGraph->lpVecBars         = -1;
+        lpSimpleBarGraph->lpCoOrdinateAxis  = -1;
         lpSimpleBarGraph                    = NULL;
     }
     
@@ -168,6 +174,7 @@ LRESULT CALLBACK WndSimpleBarGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM 
     static SCROLLINFO vertScrollInfo;
     static SCALELINE tmpScaleLine;
     static COORDINATEAXIS tmpCoOrdinateAxis;
+    static VECBARS tmpVecBars;
     static PRECT pRect;
     static LPSIMPLEBARGRAPH lpSimpleBarGraph;
     static int RESY;
@@ -211,10 +218,11 @@ LRESULT CALLBACK WndSimpleBarGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM 
         CyClient = HIWORD(lParam);
         
         // Set the the Axis as per no of bars present in the graph
+        GetVectorBarAttributes(lpSimpleBarGraph->lpVecBars,BR_SIZE,&tmpVecBars);
 
         unsigned long int a = lpSimpleBarGraph->genesisBar;
         unsigned long int d = lpSimpleBarGraph->gap + lpSimpleBarGraph->barWdth;
-        unsigned long int n = lpSimpleBarGraph->lpVecBars->iSize;
+        unsigned long int n = tmpVecBars.iSize;
         
         #define AP(a,n,d) ((a + ((n-1)*d)))
 
@@ -226,7 +234,7 @@ LRESULT CALLBACK WndSimpleBarGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM 
 
         tmpCoOrdinateAxis.YAxisEnd->x = tmpCoOrdinateAxis.Origin->x;
         tmpCoOrdinateAxis.YAxisEnd->y = tmpCoOrdinateAxis.Origin->y - lpSimpleBarGraph->maxHeight - OFFSET;
-
+        GetScale(lpSimpleBarGraph->lpCoOrdinateAxis,&tmpCoOrdinateAxis);
         // Set the Scale Lines Parameters
 
         tmpScaleLine.StartPoint->x  =   tmpCoOrdinateAxis.Origin->x;
@@ -235,7 +243,7 @@ LRESULT CALLBACK WndSimpleBarGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM 
         tmpScaleLine.EndPoint->x    =   tmpCoOrdinateAxis.XAxisEnd->x;
         tmpScaleLine.EndPoint->y    =   tmpCoOrdinateAxis.YAxisEnd->y;
 
-        tmpScaleLine.Space          =   lpSimpleBarGraph->lpCoOrdinateAxis->scale;
+        tmpScaleLine.Space          =   tmpCoOrdinateAxis.scale;
   
 
         hdc = GetDC(hWnd);

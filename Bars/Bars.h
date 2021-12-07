@@ -3,6 +3,7 @@
 #include<Windows.h>
 #include "../Error/Errors.h"
 #include "../GenericDCLL/GDCLL.h"
+#include "../HetroTree/MemoryAllocator.h"
 
 #define DEFAULT_WIDTH       100
 
@@ -24,9 +25,11 @@
 #define BR_VSCROLL          64
 #define BR_HSCROLL          128
 #define BR_NOSCROLL         256
+#define BR_SIZE             512
 
 typedef unsigned long int CNT;
 typedef int status;
+typedef unsigned long int GetFlags;
 typedef unsigned long int EditFlags;
 typedef unsigned long int InitFlags;
 typedef unsigned long int unit;
@@ -68,6 +71,7 @@ typedef struct tagVECTORBARS
 
     LPDCLL DisplayBuffer;
 
+    bst_node_t treelink;
     size_t iSize;
     
 }VECBARS,*PVECBARS,*NPVECBARS,*LPVECBARS;
@@ -75,18 +79,21 @@ typedef struct tagVECTORBARS
 LPDISPLAYBARATTR CreateDisplayBarAttr(LONG left,LONG right);
 status_t DestroyDisplayBarAttr(LPNODE rm_node);
 
-status InitBars(LPVECBARS _lpVecBars,const PRECT InlpRect,const CHAR** lables,const LPCOLORREF InlpColor,size_t _totRect);
-LPVECBARS CALLBACK CreateBars(CNT _cnt);
+// status InitBars(LPVECBARS _lpVecBars,const PRECT InlpRect,const CHAR** lables,const LPCOLORREF InlpColor,size_t _totRect);
 
-status UpdateHeight(LPVECBARS _lpVecBars,EditFlags options,unsigned long int value,const LPEXTRA InExtra);
-status UpdateWidth(LPVECBARS _lpVecBars,EditFlags options,unsigned long int value,const LPEXTRA InExtra);
-status SetDisplayRectBuffer(LPVECBARS _lpVecBars,int nSize);
+status InitBars(key_t hVecBars,const PRECT InlpRect,const CHAR** lables,const LPCOLORREF InlpColor,size_t _totRect);
+
+key_t CALLBACK CreateBars(CNT _cnt);
+
+status UpdateHeight(key_t hVecBars,EditFlags options,unsigned long int value,const LPEXTRA InExtra);
+status UpdateWidth(key_t hVecBars,EditFlags options,unsigned long int value,const LPEXTRA InExtra);
+status SetDisplayRectBuffer(key_t hVecBars,int nSize);
 
 LPEXTRA SetExtras(unit* InArr,size_t _length,int _start,int _end);
-
+status_t GetVectorBarAttributes(key_t hVecBars,GetFlags options,LPVECBARS outVecBars);
 // LPEXTRA SetColor(uint* _arr,size_t _length,int start,int end);
 
 
-status DrawBars(HDC hdc,PAINTSTRUCT *ps,LPVECBARS _lpVecBars,scrollOption option,int vPos,LPSCROLLINFO hScrollInfo);
-status CALLBACK DestoryBars(LPVECBARS _lpVecBars);
+status DrawBars(HDC hdc,PAINTSTRUCT *ps,key_t hVecBars,scrollOption option,int vPos,LPSCROLLINFO hScrollInfo);
+status CALLBACK DestoryBars(bst_node_t* tree_node);
 status DestroyExtra(LPEXTRA _lpExtra);

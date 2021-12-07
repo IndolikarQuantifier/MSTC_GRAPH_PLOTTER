@@ -1,10 +1,12 @@
 #include "Bars.h"
 #include<stdio.h>
 
-LPVECBARS CALLBACK CreateBars(CNT _cnt)
+key_t CALLBACK CreateBars(CNT _cnt)
 {
     LPVECBARS lpVecBars = NULL;
-    lpVecBars = (LPVECBARS) realloc(lpVecBars,sizeof(VECBARS));
+    key_t vecBarKey;
+    GraphResourceAlloc(VECBARS,treelink,sizeof(VECBARS),lpVecBars,vecBarKey,DestoryBars,NULL);
+    // lpVecBars = (LPVECBARS) realloc(lpVecBars,sizeof(VECBARS));
     CHECK_ERROR(lpVecBars == NULL,"Not able to allocate the vector of bars","CreateBars()");
 
     lpVecBars->lpBar = (LPBAR) xcalloc(_cnt * sizeof(BAR));
@@ -12,7 +14,7 @@ LPVECBARS CALLBACK CreateBars(CNT _cnt)
     lpVecBars->DisplayBuffer = CreateDCLL();
     lpVecBars->iSize = _cnt;
 
-    return lpVecBars;
+    return vecBarKey;
 };
 
 LPDISPLAYBARATTR CreateDisplayBarAttr(LONG left,LONG right)
@@ -39,8 +41,13 @@ LPDISPLAYBARATTR CreateDisplayBarAttr(LONG left,LONG right)
         2. The array of RECTS that should be the bars of graph
         3. Size of that array
 */ 
-status InitBars(LPVECBARS _lpVecBars,const PRECT InlpRect,const CHAR** lables,const LPCOLORREF InlpColor,size_t _totRect)
+status InitBars(key_t hVecBars,const PRECT InlpRect,const CHAR** lables,const LPCOLORREF InlpColor,size_t _totRect)
 {
+    LPVECBARS _lpVecBars = NULL;
+    bst_node_t* treenode = NULL;
+
+    GetGraphResource(hVecBars,&(treenode));
+    _lpVecBars = CONTAINER_OF(treenode,VECBARS,treelink);
 
     for(size_t i =0;i<_totRect;i++)
     {
@@ -55,8 +62,15 @@ status InitBars(LPVECBARS _lpVecBars,const PRECT InlpRect,const CHAR** lables,co
     return SUCCESS;
 }
 
-status UpdateHeight(LPVECBARS _lpVecBars,EditFlags options,unsigned long int value,const LPEXTRA InExtra)
+status UpdateHeight(key_t hVecBars,EditFlags options,unsigned long int value,const LPEXTRA InExtra)
 {
+    LPVECBARS _lpVecBars = NULL;
+    bst_node_t* treenode = NULL;
+
+    GetGraphResource(hVecBars,&(treenode));
+    _lpVecBars = CONTAINER_OF(treenode,VECBARS,treelink);
+
+
     if(options & BR_HEIGHT)
     {
         for(int i=0;i<_lpVecBars->iSize;i++)
@@ -85,8 +99,13 @@ status UpdateHeight(LPVECBARS _lpVecBars,EditFlags options,unsigned long int val
     return SUCCESS;
 }
 
-status UpdateWidth(LPVECBARS _lpVecBars,EditFlags options,unsigned long int value,const LPEXTRA InExtra)
+status UpdateWidth(key_t hVecBars,EditFlags options,unsigned long int value,const LPEXTRA InExtra)
 {
+    LPVECBARS _lpVecBars = NULL;
+    bst_node_t* treenode = NULL;
+
+    GetGraphResource(hVecBars,&(treenode));
+    _lpVecBars = CONTAINER_OF(treenode,VECBARS,treelink);
 
     if(options & BR_WIDTH)
     {
@@ -117,10 +136,33 @@ status UpdateWidth(LPVECBARS _lpVecBars,EditFlags options,unsigned long int valu
     return SUCCESS;
 }
 
-
-
-status DrawBars(HDC hdc,PAINTSTRUCT *ps,LPVECBARS _lpVecBars,scrollOption option,int vPos,LPSCROLLINFO hScrollInfo)
+status_t GetVectorBarAttributes(key_t hVecBars,GetFlags options,LPVECBARS outVecBars)
 {
+    LPVECBARS _lpVecBars = NULL;
+    bst_node_t* treenode = NULL;
+
+    GetGraphResource(hVecBars,&(treenode));
+    _lpVecBars = CONTAINER_OF(treenode,VECBARS,treelink);
+
+
+    if(options | BR_SIZE)
+    {
+        outVecBars->iSize = _lpVecBars->iSize;
+    }
+
+    return SUCCESS;
+
+}
+
+status DrawBars(HDC hdc,PAINTSTRUCT *ps,key_t hVecBars,scrollOption option,int vPos,LPSCROLLINFO hScrollInfo)
+{
+
+    LPVECBARS _lpVecBars = NULL;
+    bst_node_t* treenode = NULL;
+
+    GetGraphResource(hVecBars,&(treenode));
+    _lpVecBars = CONTAINER_OF(treenode,VECBARS,treelink);
+
     int RESY = GetDeviceCaps(hdc,LOGPIXELSY);
     RECT rcTmp;
     RECT rcOverlap;
@@ -223,8 +265,13 @@ status DrawBars(HDC hdc,PAINTSTRUCT *ps,LPVECBARS _lpVecBars,scrollOption option
     return SUCCESS;
 }
 
-status SetDisplayRectBuffer(LPVECBARS _lpVecBars,int nSize)
+status SetDisplayRectBuffer(key_t hVecBars,int nSize)
 {
+    LPVECBARS _lpVecBars = NULL;
+    bst_node_t* treenode = NULL;
+
+    GetGraphResource(hVecBars,&(treenode));
+    _lpVecBars = CONTAINER_OF(treenode,VECBARS,treelink);
 
     int genesis = _lpVecBars->lpBar[0]._box.left;
     int width = _lpVecBars->lpBar[0]._box.right - _lpVecBars->lpBar[0]._box.left;
@@ -273,8 +320,13 @@ LPEXTRA SetExtras(unit* InArr,size_t _length,int _start,int _end)
     return lpExtra;
 }
 
-status CALLBACK DestoryBars(LPVECBARS _lpVecBars)
+status CALLBACK DestoryBars(bst_node_t* tree_node)
 {
+
+    LPVECBARS _lpVecBars = NULL;
+
+    _lpVecBars = CONTAINER_OF(tree_node,VECBARS,treelink);
+
     if(_lpVecBars != NULL)
         return FAIL;
 
