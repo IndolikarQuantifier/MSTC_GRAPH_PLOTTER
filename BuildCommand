@@ -1,4 +1,4 @@
-cl -EHsc GraphPlotterMain/GraphPlotterMain.c Bars/Bars.c CoOrdinateAxis/CoOrdinateAxis.c ScaleLines/ScaleLines.c SimpleBarGraph/SimpleBarGraph.c Error/Errors.c GenericDCLL/GDCLL.c
+cl -EHsc GraphPlotterMain/GraphPlotterMain.c Bars/Bars.c CoOrdinateAxis/CoOrdinateAxis.c ScaleLines/ScaleLines.c SimpleBarGraph/SimpleBarGraph.c Error/Errors.c GenericDCLL/GDCLL.c HetroTree/BST.c HetroTree/MemoryAllocator.c
 
 
 cl -EHsc SimpleLineGraphPlotter/SimpleLineGraphPlotter.c Lines/Line.c SimpleLineGraph/SimpleLineGraph.c SimpleBarGraph/SimpleBarGraph.c

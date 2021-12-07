@@ -4,7 +4,7 @@
 
 #include "../ScaleLines/ScaleLines.h"
 #include "../Error/Errors.h"
-
+#include "../HetroTree/MemoryAllocator.h"
 
 #define AX_OFFSET         30
 
@@ -52,23 +52,25 @@ typedef struct tagCOORDINATEAXIS
     CHAR* TitleY;
     size_t YTileLength;
 
+    bst_node_t treelink;
     unsigned long int  scale;
 
 }COORDINATEAXIS,*PCOORDINATEAXIS,*LPCOORDINATEAXIS;
 
 
-LPCOORDINATEAXIS CALLBACK CreateCoOrdinateAxis();
+key_t CALLBACK CreateCoOrdinateAxis();
 void Destroy(void* ptr);
 void DestroyLables(LPSTR* lpLableBase);
 
-status SetCoOrdinateParamters(LPCOORDINATEAXIS lpCoOrdinate,const LPCOORDINATEAXIS InCoOrdinateAxis,options opt);
+status SetCoOrdinateParamters(key_t lpCoOrdinate,const LPCOORDINATEAXIS InCoOrdinateAxis,options opt);
 
 
 
 
-status GetAxis(Axis axis,LPAXIS pAxis,const LPCOORDINATEAXIS InCoOrdinateAxis);
-status GetOrigin(const LPCOORDINATEAXIS InOrdinateAxis,LPPOINT OutOrigin);
+status GetAxis(Axis axis,LPAXIS pAxis,const key_t hCoOrdinateAxis);
+status GetOrigin(const key_t hCoOrdinateAxis,LPPOINT OutOrigin);
 
-status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const LPCOORDINATEAXIS InOrdinateAxis,scrollOption option,int vPos,int hPos);
+status GetScale(const key_t hCoOrdinateAxis,LPCOORDINATEAXIS OutCoOrdinateAxis);
+status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const key_t hCoOrdinateAxis,scrollOption option,int vPos,int hPos);
 
-status CALLBACK DestoryCoOrdinateAxis(LPCOORDINATEAXIS _coOrdinateAxis);
+status CALLBACK DestoryCoOrdinateAxis(bst_node_t* _coOrdinateAxis);

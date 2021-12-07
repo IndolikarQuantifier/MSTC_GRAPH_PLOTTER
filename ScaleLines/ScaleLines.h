@@ -2,6 +2,7 @@
 
 #include<Windows.h>
 #include "../Error/Errors.h"
+#include "../HetroTree/MemoryAllocator.h"
 
 typedef unsigned long int unit;
 typedef int status;
@@ -27,11 +28,14 @@ typedef struct tagSCALELINE
     COLORREF ScaleColor;
     HBRUSH* hBrush;
     unit Mode;
+
+    bst_node_t treelink;
+
     unit Space;    
 }SCALELINE,*PSCALELINE,*LPSCALELINE;
 
 
-LPSCALELINE CALLBACK CreateScaleLines();
-status SetScaleLines(LPSCALELINE _lpScaleLine,Options option,const LPSCALELINE InScaleLines);
-void DrawScaleLines(HDC hdc ,PPAINTSTRUCT ps,const LPSCALELINE _lpScaleLine,Options option,int pos);
-status CALLBACK DestoryScaleLines(LPSCALELINE lpScaleLine);
+key_t CALLBACK CreateScaleLines();
+status SetScaleLines(key_t hScaleLine,Options option,const LPSCALELINE InScaleLines);
+void DrawScaleLines(HDC hdc ,PPAINTSTRUCT ps,const key_t hScaleLine,Options option,int pos);
+status CALLBACK DestoryScaleLines(bst_node_t* tree_node);

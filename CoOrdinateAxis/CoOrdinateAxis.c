@@ -1,10 +1,14 @@
 #include "CoOrdinateAxis.h"
 
 
-LPCOORDINATEAXIS CALLBACK CreateCoOrdinateAxis()
+
+key_t CALLBACK CreateCoOrdinateAxis()
 {
 
-        LPCOORDINATEAXIS lpCoOrdinate = (LPCOORDINATEAXIS) xcalloc(sizeof(COORDINATEAXIS));
+        LPCOORDINATEAXIS lpCoOrdinate = NULL;//(LPCOORDINATEAXIS) xcalloc(sizeof(COORDINATEAXIS));
+        key_t CoordinateKey;
+        GraphResourceAlloc(COORDINATEAXIS,treelink,sizeof(COORDINATEAXIS),lpCoOrdinate,CoordinateKey,DestoryCoOrdinateAxis,NULL);
+
         CHECK_ERROR( lpCoOrdinate == NULL,
         "Not able to allocate the CoOrdinate Axis",
         "CreateCoOrdinateAxis" );
@@ -17,7 +21,7 @@ LPCOORDINATEAXIS CALLBACK CreateCoOrdinateAxis()
         // lpCoOrdinate->TitleX = (LPSTR) xcalloc(1,_coOrdinateAxis->XTitleLength);
         // lpCoOrdinate->TitleY = (LPSTR) xcalloc(1,_coOrdinateAxis->YTileLength);
 
-        return lpCoOrdinate;
+        return CoordinateKey;
 }
 
 void Destroy(void* ptr)
@@ -42,8 +46,13 @@ void DestroyLables(LPSTR* lpLableBase)
     }
 }
 
-status SetCoOrdinateParamters(LPCOORDINATEAXIS lpCoOrdinate,const LPCOORDINATEAXIS InCoOrdinateAxis,options opt)
+status SetCoOrdinateParamters(key_t hCoOrdinateAxis,const LPCOORDINATEAXIS InCoOrdinateAxis,options opt)
 {
+    bst_node_t* treenode = NULL;
+    GetGraphResource(hCoOrdinateAxis,&treenode);
+
+    LPCOORDINATEAXIS lpCoOrdinate = CONTAINER_OF(treenode,COORDINATEAXIS,treelink);
+
     if(InCoOrdinateAxis == NULL || lpCoOrdinate == NULL)
         return FAIL;
 
@@ -140,33 +149,55 @@ status SetCoOrdinateParamters(LPCOORDINATEAXIS lpCoOrdinate,const LPCOORDINATEAX
 
 }
 
-status GetAxis(Axis axis,LPAXIS pAxis,const LPCOORDINATEAXIS InCoOrdinateAxis)
+status GetAxis(Axis axis,LPAXIS pAxis,const key_t hCoOrdinateAxis)
 {
+    bst_node_t* treenode = NULL;
+    GetGraphResource(hCoOrdinateAxis,&treenode);
+
+    LPCOORDINATEAXIS lpCoOrdinate = CONTAINER_OF(treenode,COORDINATEAXIS,treelink);
+
     if(axis == XAXIS)
     {
-        pAxis->start.x = InCoOrdinateAxis->Origin->x;
-        pAxis->start.y = InCoOrdinateAxis->Origin->y;
+        pAxis->start.x = lpCoOrdinate->Origin->x;
+        pAxis->start.y = lpCoOrdinate->Origin->y;
 
-        pAxis->end.x = InCoOrdinateAxis->XAxisEnd->x;
-        pAxis->end.y = InCoOrdinateAxis->XAxisEnd->y;
+        pAxis->end.x = lpCoOrdinate->XAxisEnd->x;
+        pAxis->end.y = lpCoOrdinate->XAxisEnd->y;
     }
 
     else if(axis == YAXIS)
     {
-        pAxis->start.x = InCoOrdinateAxis->Origin->x;
-        pAxis->start.y = InCoOrdinateAxis->Origin->y;
+        pAxis->start.x = lpCoOrdinate->Origin->x;
+        pAxis->start.y = lpCoOrdinate->Origin->y;
 
-        pAxis->end.x = InCoOrdinateAxis->YAxisEnd->x;
-        pAxis->end.y = InCoOrdinateAxis->YAxisEnd->y;
+        pAxis->end.x = lpCoOrdinate->YAxisEnd->x;
+        pAxis->end.y = lpCoOrdinate->YAxisEnd->y;
     }
 
     return SUCCESS;
 }
 
-status GetOrigin(const LPCOORDINATEAXIS InOrdinateAxis,LPPOINT OutOrigin)
+status GetOrigin(const key_t hCoOrdinateAxis,LPPOINT OutOrigin)
 {
-    (OutOrigin)->x = InOrdinateAxis->Origin->x;
-    (OutOrigin)->y = InOrdinateAxis->Origin->y;
+    bst_node_t* treenode = NULL;
+    GetGraphResource(hCoOrdinateAxis,&treenode);
+
+    LPCOORDINATEAXIS lpCoOrdinate = CONTAINER_OF(treenode,COORDINATEAXIS,treelink);
+
+    (OutOrigin)->x = lpCoOrdinate->Origin->x;
+    (OutOrigin)->y = lpCoOrdinate->Origin->y;
+
+    return SUCCESS;
+}
+
+status GetScale(const key_t hCoOrdinateAxis,LPCOORDINATEAXIS OutCoOrdinateAxis)
+{
+    bst_node_t* treenode = NULL;
+    GetGraphResource(hCoOrdinateAxis,&treenode);
+
+    LPCOORDINATEAXIS lpCoOrdinate = CONTAINER_OF(treenode,COORDINATEAXIS,treelink);
+
+    OutCoOrdinateAxis->scale = lpCoOrdinate->scale;
 
     return SUCCESS;
 }
@@ -177,11 +208,17 @@ status GetOrigin(const LPCOORDINATEAXIS InOrdinateAxis,LPPOINT OutOrigin)
             Optimize the drawing algorithm for CoOrdinateAxis VSCROLL and HSCROLL
 */
 
-status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const LPCOORDINATEAXIS InOrdinateAxis,scrollOption option,int vPos,int hPos)
+status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const key_t hCoOrdinateAxis,scrollOption option,int vPos,int hPos)
 {
-    LPPOINT O   =   InOrdinateAxis->Origin;
-    LPPOINT OX  =   InOrdinateAxis->XAxisEnd;
-    LPPOINT OY  =   InOrdinateAxis->YAxisEnd;
+
+    bst_node_t* treenode = NULL;
+    GetGraphResource(hCoOrdinateAxis,&treenode);
+
+    LPCOORDINATEAXIS lpCoOrdinate = CONTAINER_OF(treenode,COORDINATEAXIS,treelink);
+
+    LPPOINT O   =   lpCoOrdinate->Origin;
+    LPPOINT OX  =   lpCoOrdinate->XAxisEnd;
+    LPPOINT OY  =   lpCoOrdinate->YAxisEnd;
     
     POINT P1;
     POINT P2;
@@ -279,7 +316,7 @@ status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const LPCOORDINATEAXIS InOrdin
         LineTo(hdc,P3.x,P3.y);
 
         SetTextAlign(hdc,TA_CENTER);
-        TextOut(hdc,P3.x / 2,InOrdinateAxis->Origin->y + AX_OFFSET,InOrdinateAxis->TitleX,InOrdinateAxis->XTitleLength);
+        TextOut(hdc,P3.x / 2,lpCoOrdinate->Origin->y + AX_OFFSET,lpCoOrdinate->TitleX,lpCoOrdinate->XTitleLength);
 
         // static CHAR buff[500];
         // wsprintf(buff,"P1.x : %d P3.x : %d hPos : %d OX->x : %d",O->x,P3.x,hPos,Ox);
@@ -288,17 +325,21 @@ status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const LPCOORDINATEAXIS InOrdin
 
     if(option & AX_NOSCROLL)
     {
-        MoveToEx(hdc,InOrdinateAxis->Origin->x,InOrdinateAxis->Origin->y,NULL);
-        LineTo(hdc,InOrdinateAxis->XAxisEnd->x,InOrdinateAxis->XAxisEnd->y);
+        MoveToEx(hdc,lpCoOrdinate->Origin->x,lpCoOrdinate->Origin->y,NULL);
+        LineTo(hdc,lpCoOrdinate->XAxisEnd->x,lpCoOrdinate->XAxisEnd->y);
 
-        MoveToEx(hdc,InOrdinateAxis->Origin->x,InOrdinateAxis->Origin->y,NULL);
-        LineTo(hdc,InOrdinateAxis->YAxisEnd->x,InOrdinateAxis->YAxisEnd->y);
+        MoveToEx(hdc,lpCoOrdinate->Origin->x,lpCoOrdinate->Origin->y,NULL);
+        LineTo(hdc,lpCoOrdinate->YAxisEnd->x,lpCoOrdinate->YAxisEnd->y);
     }
     return SUCCESS;
 }
 
-status CALLBACK DestoryCoOrdinateAxis(LPCOORDINATEAXIS _coOrdinateAxis)
+status CALLBACK DestoryCoOrdinateAxis(bst_node_t* tree_node)
 {
+    LPCOORDINATEAXIS _coOrdinateAxis = NULL;
+
+    _coOrdinateAxis = CONTAINER_OF(tree_node,COORDINATEAXIS,treelink);
+
     if(_coOrdinateAxis != NULL)
     {
         Destroy(_coOrdinateAxis->Origin);

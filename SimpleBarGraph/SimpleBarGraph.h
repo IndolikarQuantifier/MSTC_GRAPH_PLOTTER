@@ -2,6 +2,7 @@
 #include<Windows.h>
 
 #include "../CoOrdinateAxis/CoOrdinateAxis.h"
+#include "../HetroTree/MemoryAllocator.h"
 #include "../Bars/Bars.h"
 #include "../Error/Errors.h"
 
@@ -23,9 +24,9 @@ typedef struct tagSIMPLEBARGRAPH
     BarWdth barWdth;
     GenesisBar genesisBar;
 
-    LPCOORDINATEAXIS lpCoOrdinateAxis;
-    LPVECBARS lpVecBars;
-    LPSCALELINE lpScaleLine;
+    key_t lpCoOrdinateAxis;
+    key_t lpVecBars;
+    key_t lpScaleLine;
 
     unit maxHeight;
 
