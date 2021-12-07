@@ -1,4 +1,5 @@
 #include "MemoryAllocator.h"
+#include <stdio.h>
 
 static bst_t* gbst = NULL;
 
@@ -40,28 +41,46 @@ status_t Insert(bst_node_t* new_node)
     return SUCCESS;
 }
 
+status_t DeAllocate(key_t rm_key)
+{
+    return remove_bst(GetResourceAllocator(),rm_key);
+}
+
 // int main(void)
 // {
 //     struct A* inA;
 //     struct B* inB;
 
-//     key_t key1,key2;
+//     key_t key1[10],key2[10];
     
-//     GraphResourceAlloc(struct A,treelink,sizeof(struct A),inA,key1,DestroyA,show_a);
-//     GraphResourceAlloc(struct B,treelink,sizeof(struct B),inB,key2,DestroyB,show_b);
+//     // GraphResourceAlloc(struct A,treelink,sizeof(struct A),inA,key1,DestroyA,show_a);
+//     // GraphResourceAlloc(struct B,treelink,sizeof(struct B),inB,key2,DestroyB,show_b);
     
 //     struct A* search_a = NULL;
 //     bst_node_t* out_node = NULL;
 
-//     inA->a = 100;
-//     inA->b = 'V';
-//     inA->d = 3.14;
+    
 
-//     status_t stat = GetGraphResource(key1,&out_node);
+//     for(int i=0;i<10;i++)
+//     {
+//         GraphResourceAlloc(struct A,treelink,sizeof(struct A),inA,key1[i],DestroyA,show_a);
+//         GraphResourceAlloc(struct B,treelink,sizeof(struct B),inB,key2[i],DestroyB,show_b);
 
-//     // printf(" key1 : %lu  status : %d outnode : [%p]\n",key1,stat,out_node);
+//         inA->a = i + 34;
+//         inA->b = 'V';
+//         inA->d = 3.14 * i;
 
-//     // show(gbst,"WOW :");
+//         inB->a = i * 10;
+//         inB->d = 0.01 * i;
+//     }
+//     for(int i=0;i<10;i++)
+//         printf("i : %d key1 : %lu\n",i,key1[i]);
+
+//     show(gbst,"Before Deletion:");
+
+//     status_t stat = DeAllocate(key1[5]);
+
+//     show(gbst,"After Deletion:");
 
 //     destroy_bst(&gbst);
 
@@ -100,7 +119,7 @@ status_t Insert(bst_node_t* new_node)
 //     return inA;
 // }
 
-// status_t DestroyA(bst_node_t* rm)
+// status_t __stdcall DestroyA(bst_node_t* rm)
 // {
 //     struct A* rm_a = CONTAINER_OF(rm,struct A,treelink);
 
@@ -124,7 +143,7 @@ status_t Insert(bst_node_t* new_node)
 //     return inB;
 // }
 
-// status_t DestroyB(bst_node_t* rm)
+// status_t __stdcall DestroyB(bst_node_t* rm)
 // {
 //     struct B* rm_b = CONTAINER_OF(rm,struct B,treelink);
 //     free(rm_b);

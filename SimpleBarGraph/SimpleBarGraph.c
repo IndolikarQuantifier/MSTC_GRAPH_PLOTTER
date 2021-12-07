@@ -145,6 +145,10 @@ void DestroySimpleBarGraph(LPSIMPLEBARGRAPH lpSimpleBarGraph)
         
         // DestoryBars(lpSimpleBarGraph->lpVecBars);
         // DestoryScaleLines(lpSimpleBarGraph->lpScaleLine);
+        DeAllocate(lpSimpleBarGraph->lpCoOrdinateAxis);
+        DeAllocate(lpSimpleBarGraph->lpScaleLine);
+        DeAllocate(lpSimpleBarGraph->lpVecBars);
+        
         free(lpSimpleBarGraph);
 
         lpSimpleBarGraph->lpVecBars         = -1;

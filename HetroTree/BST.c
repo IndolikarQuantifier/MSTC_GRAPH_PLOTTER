@@ -73,8 +73,84 @@ status_t insert_bst(bst_t* p_bst,bst_node_t* p_new_node)
     return SUCCESS;
 }
 
-status_t remove_bst(bst_t* p_bst,key_t key,bst_node_t* rm_node)
+status_t remove_bst(bst_t* p_bst,key_t key)
 {
+    bst_node_t* rm_node = NULL;
+    search_key(p_bst,key,&rm_node);
+    if(rm_node == NULL)
+        return BST_KEY_NOT_FOUND;
+    /* 
+        case 1:
+
+        Deleted Node has left subtree NULL and right subtree is non-NULL
+
+    */
+    if(rm_node->left == NULL)
+    {
+        if(rm_node->parent == NULL)
+            p_bst->p_root_node = rm_node->right;
+        else if(rm_node == rm_node->parent->left)
+            rm_node->parent->left = rm_node->right;
+        else if(rm_node == rm_node->parent->right)
+            rm_node->parent->right = rm_node->right;
+        
+        if(rm_node->right)
+            rm_node->right->parent = rm_node->parent;
+    }
+    /* 
+        case 2:
+
+        Deleted Node has right subtree NULL and left subtree is non-NULL
+    */
+    else if(rm_node->right == NULL)
+    {
+        if(rm_node->parent == NULL)
+            p_bst->p_root_node = rm_node->left;
+        else if(rm_node == rm_node->parent->left)
+            rm_node->parent->left = rm_node->left;
+        else if(rm_node == rm_node->parent->right)
+            rm_node->parent->right = rm_node->left;
+        
+        if(rm_node->left)
+            rm_node->left->parent = rm_node->parent;
+    }
+    // case 3:
+    else if(rm_node->left != NULL && rm_node->right != NULL)
+    {
+        bst_node_t* rm_successor = NULL;
+        rm_successor = rm_node->right;
+        while(rm_successor->left == NULL)
+            rm_successor = rm_successor->left;
+
+        if(rm_successor == rm_node->right)
+        {
+            rm_successor->parent->left = rm_successor->right;
+            if(rm_successor->right)
+                rm_successor->right->parent = rm_successor->parent;
+
+            // Take rm_node right subtree
+            rm_successor->right = rm_node->right;
+            rm_successor->right->parent = rm_successor;
+
+        }        
+
+        // Take rm_node left subtree
+        rm_successor->left = rm_node->left;
+        rm_successor->left->parent = rm_successor;
+
+        // Take rm_node parent 
+        if(rm_node->parent == NULL)
+            p_bst->p_root_node = rm_successor;
+        else if(rm_node == rm_node->parent->left)
+            rm_node->parent->left = rm_successor;
+        else if(rm_node == rm_node->parent->right)
+            rm_node->parent->right = rm_successor;
+
+        rm_successor->parent = rm_node->parent;
+    }
+
+    rm_node->doFree(rm_node);
+
     return SUCCESS;
 }
 
