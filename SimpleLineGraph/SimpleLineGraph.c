@@ -10,7 +10,7 @@
 
 LPSIMPLELINEGRAPH glpSimpleGraph = NULL;
 
-int CreateLineGraph(HWND hWnd,LPSIMPLELINEGRAPH* OutSimpleLineGraph,int* ppPoints,int m,int scale,LPCOLORREF pColor)
+int CreateLineGraph(HWND hWnd,LPSIMPLELINEGRAPH* OutSimpleLineGraph,int* ppPoints,int m,int scale,LPCOLORREF pColor,CHAR* xTitle,CHAR** labels)
 {
     // Line Graph Specific Initializations
 
@@ -27,6 +27,8 @@ int CreateLineGraph(HWND hWnd,LPSIMPLELINEGRAPH* OutSimpleLineGraph,int* ppPoint
     // Line Specific Initializations
     (*OutSimpleLineGraph)->Lines[0].points = (LPPOINT) xcalloc(m * sizeof(POINT));
     (*OutSimpleLineGraph)->Lines[0].height = (unit*) xcalloc(m * sizeof(unit));
+    (*OutSimpleLineGraph)->Lines[0].labels = labels;
+
     (*OutSimpleLineGraph)->Lines->nSize = m;
     
     // -------------- Find the Max Height of a Point And X CoOrdinate -----------------
@@ -46,8 +48,9 @@ int CreateLineGraph(HWND hWnd,LPSIMPLELINEGRAPH* OutSimpleLineGraph,int* ppPoint
     COORDINATEAXIS tmpCoOrdinateAxis;
 
     tmpCoOrdinateAxis.scale = scale;
+    tmpCoOrdinateAxis.TitleX = xTitle;
 
-    SetCoOrdinateParamters((*OutSimpleLineGraph)->lpCoOrdinateAxis,&tmpCoOrdinateAxis,AX_SCALE);
+    SetCoOrdinateParamters((*OutSimpleLineGraph)->lpCoOrdinateAxis,&tmpCoOrdinateAxis,AX_SCALE | AX_TITLE_X);
 
     LINE tmpLine;
 
@@ -208,7 +211,9 @@ LRESULT CALLBACK WndSimpleLineGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM
         tmpScaleLine.EndPoint->x    =   tmpCoOrdinateAxis.XAxisEnd->x;
         tmpScaleLine.EndPoint->y    =   tmpCoOrdinateAxis.YAxisEnd->y;
 
-        tmpScaleLine.Space          =   lpSimpleLineGraph->lpCoOrdinateAxis->scale;
+        GetScale(lpSimpleLineGraph->lpCoOrdinateAxis,&tmpCoOrdinateAxis);
+
+        tmpScaleLine.Space          =   tmpCoOrdinateAxis.scale;
   
 
         hdc = GetDC(hWnd);
@@ -300,6 +305,8 @@ LRESULT CALLBACK WndSimpleLineGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM
 
         SetRect(&rcHorzontalScroll,tmpCoOrdinateAxis.Origin->x + a,0,tmpCoOrdinateAxis.Origin->x + AP(a,horScrollInfo.nPage + 1,d),tmpCoOrdinateAxis.Origin->y + 25);
 
+        
+
         break;
 
         case WM_PAINT:
@@ -327,6 +334,8 @@ LRESULT CALLBACK WndSimpleLineGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM
                             RGB(255,0,0),
                             tmpCoOrdinateAxis.Origin->y
             );
+
+            // Rectangle(hdc,rcHorzontalScroll.left,rcHorzontalScroll.top,rcHorzontalScroll.right,rcHorzontalScroll.bottom);
 
             EndPaint(hWnd,&ps);
             hdc = NULL;
@@ -440,13 +449,15 @@ status DrawLines(HDC hdc,PAINTSTRUCT* ps,LPLINE lpLine,scrollOption option,int v
                   hScrollInfo->nPos + hScrollInfo->nPage
                 );
 
-    // HPEN hPrevPen = NULL;
-    // HPEN hPen = CreatePen(PS_SOLID,3,color);
+    HPEN hPrevPen = NULL;
+    HPEN hPen = CreatePen(PS_SOLID,3,color);
    
     if(option & LNE_HSCROLL)
     {
         LPNODE p_run = NULL;
         p_run = lpLine->DisplayLineBuffer->next;
+
+        SetTextAlign(hdc,TA_CENTER);
 
         for(int i = hScrollInfo->nPos,j=0;
                 j < hScrollInfo->nPage;
@@ -457,6 +468,10 @@ status DrawLines(HDC hdc,PAINTSTRUCT* ps,LPLINE lpLine,scrollOption option,int v
             PointBuffer = CONTAINER_OF(p_run,BUFFERPOINTS,link);
 
             PointBuffer->point.y = lpLine->points[i].y;
+            PointBuffer->label = lpLine->labels[i];
+
+            TextOut(hdc,PointBuffer->point.x,axisY + 10,PointBuffer->label,strnlen(PointBuffer->label,100));
+
             p_run = p_run->next;
         }
     }
@@ -483,6 +498,8 @@ status DrawLines(HDC hdc,PAINTSTRUCT* ps,LPLINE lpLine,scrollOption option,int v
     LPBUFFERPOINTS StartBufferPoint = CONTAINER_OF(p_run,BUFFERPOINTS,link);
     LPBUFFERPOINTS BufferPoints = NULL;
 
+    hPrevPen = SelectObject(hdc,hPen);
+
     MoveToEx(hdc,StartBufferPoint->point.x,StartBufferPoint->point.y,NULL);
     p_run = p_run->next;
 
@@ -493,6 +510,9 @@ status DrawLines(HDC hdc,PAINTSTRUCT* ps,LPLINE lpLine,scrollOption option,int v
 
         p_run = p_run->next;
     }
+
+    SelectObject(hdc,hPrevPen);
+
     return SUCCESS;
 }
 
@@ -511,8 +531,9 @@ status SetDisplayLineBuffer(LPSIMPLELINEGRAPH lpSimpleLineGraph,size_t nSize)
     // // ZeroMemory(ptr,size * sizeof(POINT));
 
     // lpSimpleLineGraph->Lines[0].lpDisplayBuffer = ptr;
-
-    int genesis = lpSimpleLineGraph->genesisPoint;
+    POINT Origin;
+    GetOrigin(lpSimpleLineGraph->lpCoOrdinateAxis,&Origin);
+    int genesis = Origin.x + lpSimpleLineGraph->genesisPoint;
 
     int gap = lpSimpleLineGraph->pointGap;
     
@@ -557,8 +578,8 @@ status DestorySimpleLineGraph(LPSIMPLELINEGRAPH lpSimpleLineGraph)
     if(lpSimpleLineGraph == NULL)
         return SUCCESS;
 
-    DestoryCoOrdinateAxis(lpSimpleLineGraph->lpCoOrdinateAxis);
-    DestoryScaleLines(lpSimpleLineGraph->lpScaleLine);
+    DeAllocate(lpSimpleLineGraph->lpCoOrdinateAxis);
+    DeAllocate(lpSimpleLineGraph->lpScaleLine);
     DestroyLine(&(lpSimpleLineGraph->Lines[0]));
 
     free(lpSimpleLineGraph->Lines);

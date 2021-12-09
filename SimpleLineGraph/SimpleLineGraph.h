@@ -19,6 +19,7 @@ typedef unsigned long int scrollOption;
 typedef struct tagBUFFERPOINTS
 {
     POINT point;
+    CHAR* label;
 
     NODE link;
 }BUFFERPOINTS,*LPBUFFERPOINTS,*PBUFFERPOINTS;
@@ -32,6 +33,7 @@ typedef struct tagLINE
     unit maxHeight;
 
     int nSize;
+    CHAR** labels;
 
     LPPOINT lpDisplayBuffer;
     LPDCLL DisplayLineBuffer;
@@ -44,8 +46,8 @@ typedef struct tagSIMPLELINEGRAPH
     int pointGap;
 
     LPLINE Lines;
-    LPCOORDINATEAXIS lpCoOrdinateAxis;
-    LPSCALELINE lpScaleLine;
+    HCOORDINATEAXIS lpCoOrdinateAxis;
+    HSCALELINE lpScaleLine;
 
     int nSize;
 }SIMPLELINEGRAPH,*LPSIMPLELINEGRAPH,*PSIMPLELINEGRAPH;
@@ -54,7 +56,7 @@ LPBUFFERPOINTS CreateBufferPoint(LONG x);
 // HWND InitLineGraph(HINSTANCE hInstance,HWND hPrentWnd);
 LRESULT CALLBACK WndSimpleLineGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM lParam);
 
-int CreateLineGraph(HWND hWnd,LPSIMPLELINEGRAPH* OutSimpleLineGraph,int* ppPoints,int m,int scale,LPCOLORREF pColor);
+int CreateLineGraph(HWND hWnd,LPSIMPLELINEGRAPH* OutSimpleLineGraph,int* ppPoints,int m,int scale,LPCOLORREF pColor,CHAR* xTitle,CHAR** labels);
 
 status RelocateLines(LPSIMPLELINEGRAPH lpSimpleLineGraph);
 status SetDisplayLineBuffer(LPSIMPLELINEGRAPH lpSimpleLineGraph,size_t size);

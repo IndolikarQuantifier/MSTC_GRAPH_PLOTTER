@@ -104,20 +104,20 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     int* heights = (int*) calloc(16,sizeof(int));
     int length[4] = {4,4,6,2};
     LPCOLORREF lpColor = (LPCOLORREF) calloc(1,sizeof(COLORREF));
-    // CHAR* lables[] = {
-    //     "2000",
-    //     "2001",
-    //     "2002",
-    //     "2003",
-    //     "2004",
-    //     "2005",
-    //     "2006",
-    //     "2007",
-    //     "2008",
-    //     "2009",
-    //     "2010",
-    //     "2011"
-    // };
+    CHAR* lables[] = {
+        "2000",
+        "2001",
+        "2002",
+        "2003",
+        "2004",
+        "2005",
+        "2006",
+        "2007",
+        "2008",
+        "2009",
+        "2010",
+        "2011"
+    };
 
     heights[0] = 10;
 
@@ -147,25 +147,17 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
 
     heights[11] = 30;
 
-    heights[12] = 10;
-
-    heights[13] = 30;
-
-    // ---
-
-    heights[14] = 40;
- 
-    heights[15] = 80;
-
     lpColor[0] = RGB(255,255,0);
     
     CreateLineGraph(
                     hWnd1,
                     &lpSimpleLineGraph,
                     heights,
-                    16,
+                    12,
                     10,
-                    lpColor
+                    lpColor,
+                    "Years",
+                    lables
                 );
     // CreateBarGraph(hWnd2,&lpSimpleBarGraph2,(heights + 4),(lpColor + 4),2);
     free(heights);

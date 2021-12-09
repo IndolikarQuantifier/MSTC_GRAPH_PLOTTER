@@ -29,6 +29,7 @@
 
 typedef int Axis;
 typedef unsigned long int options;
+typedef unsigned long int HCOORDINATEAXIS;
 typedef options scrollOption;
 typedef int status;
 
