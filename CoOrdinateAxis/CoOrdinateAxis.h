@@ -72,6 +72,6 @@ status GetAxis(Axis axis,LPAXIS pAxis,const key_t hCoOrdinateAxis);
 status GetOrigin(const key_t hCoOrdinateAxis,LPPOINT OutOrigin);
 
 status GetScale(const key_t hCoOrdinateAxis,LPCOORDINATEAXIS OutCoOrdinateAxis);
-status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const key_t hCoOrdinateAxis,scrollOption option,int vPos,int hPos);
+status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const key_t hCoOrdinateAxis,scrollOption option,int vPos,int hPos,int wndWidth);
 
 status CALLBACK DestoryCoOrdinateAxis(bst_node_t* _coOrdinateAxis);

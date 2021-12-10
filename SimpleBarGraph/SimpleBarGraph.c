@@ -349,7 +349,8 @@ LRESULT CALLBACK WndSimpleBarGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM 
                                 lpSimpleBarGraph->lpCoOrdinateAxis,
                                 AX_VSCROLL | AX_HSCROLL,
                                 actualNMax - vertScrollInfo.nPos,
-                                nHscrollAmt * horScrollInfo.nPos
+                                nHscrollAmt * horScrollInfo.nPos,
+                                CxClient
                             );
 
             DrawScaleLines(     hdc,&ps,
@@ -384,13 +385,13 @@ LRESULT CALLBACK WndSimpleBarGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM 
 
         switch(LOWORD(wParam))
         {
-            // case SB_TOP:
-            // vertScrollInfo.nPos = vertScrollInfo.nMin;
-            // break;
+            case SB_TOP:
+            vertScrollInfo.nPos = vertScrollInfo.nMin;
+            break;
 
-            // case SB_BOTTOM:
-            // vertScrollInfo.nPos = vertScrollInfo.nMax;
-            // break;
+            case SB_BOTTOM:
+            vertScrollInfo.nPos = vertScrollInfo.nMax;
+            break;
 
             case SB_LINEDOWN:
             vertScrollInfo.nPos += 1;
@@ -474,8 +475,43 @@ LRESULT CALLBACK WndSimpleBarGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM 
                 ScrollWindow(hWnd,nHscrollAmt * (iHscroll - horScrollInfo.nPos),0,&rcHorzontalScroll,&rcHorzontalScroll);
                 UpdateWindow(hWnd);
             }
+        break;
 
+        case WM_KEYDOWN :
+            switch(wParam)
+            {
+                case VK_PRIOR :
+                    SendMessage(hWnd,WM_VSCROLL,SB_PAGEUP,0);
+                break;
 
+                case VK_NEXT:
+                    SendMessage(hWnd,WM_VSCROLL,SB_PAGEDOWN,0);
+                break;
+
+                case VK_HOME:
+                    SendMessage(hWnd,WM_VSCROLL,SB_TOP,0);
+                break;
+
+                case VK_END:
+                    SendMessage(hWnd,WM_VSCROLL,SB_BOTTOM,0);
+                break;
+
+                case VK_UP:
+                    SendMessage(hWnd,WM_VSCROLL,SB_LINEUP,0);
+                break;
+
+                case VK_DOWN:
+                    SendMessage(hWnd,WM_VSCROLL,SB_LINEDOWN,0);
+                break;
+
+                case VK_LEFT:
+                    SendMessage(hWnd,WM_HSCROLL,SB_LINELEFT,0);
+                break;
+
+                case VK_RIGHT:
+                    SendMessage(hWnd,WM_HSCROLL,SB_LINERIGHT,0);
+                break;
+            }
         break;
 
     }

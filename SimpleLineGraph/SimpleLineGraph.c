@@ -316,7 +316,8 @@ LRESULT CALLBACK WndSimpleLineGraphProc(HWND hWnd,UINT uMsg,WPARAM wParam,LPARAM
                                 lpSimpleLineGraph->lpCoOrdinateAxis,
                                 AX_HSCROLL | AX_VSCROLL,
                                 actualNMax - vertScrollInfo.nPos,
-                                nHscrollAmt * horScrollInfo.nPos
+                                nHscrollAmt * horScrollInfo.nPos,
+                                CxClient
                             );
 
             DrawScaleLines(     hdc,&ps,
@@ -481,7 +482,7 @@ status DrawLines(HDC hdc,PAINTSTRUCT* ps,LPLINE lpLine,scrollOption option,int v
         LPNODE p_run = NULL;
         p_run = lpLine->DisplayLineBuffer->next;
 
-        for(int i=hScrollInfo->nPos;i<hScrollInfo->nPage;i++)
+        for(int i=hScrollInfo->nPos,j=0;j<hScrollInfo->nPage && i < nSize;i++)
         {
             LPBUFFERPOINTS PointBuffer = NULL;
             PointBuffer = CONTAINER_OF(p_run,BUFFERPOINTS,link);

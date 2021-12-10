@@ -101,7 +101,7 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     HWND hWnd1 = Init(hInstance,hWnd,WndSimpleLineGraphProc,"Line Graph","Wnd Line Caption");
     // HWND hWnd2 = Init(hInstance,hWnd);
 
-    int* heights = (int*) calloc(16,sizeof(int));
+    int* heights = (int*) calloc(12,sizeof(int));
     int length[4] = {4,4,6,2};
     LPCOLORREF lpColor = (LPCOLORREF) calloc(1,sizeof(COLORREF));
     CHAR* lables[] = {

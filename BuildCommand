@@ -1,10 +1,11 @@
+------------------------------- Bar Graph ------------------------------------------------
 cl -EHsc GraphPlotterMain/GraphPlotterMain.c Bars/Bars.c CoOrdinateAxis/CoOrdinateAxis.c ScaleLines/ScaleLines.c SimpleBarGraph/SimpleBarGraph.c Error/Errors.c GenericDCLL/GDCLL.c HetroTree/BST.c HetroTree/MemoryAllocator.c
 
+-------------------------------- Line Graph -----------------------------------------------
 
-cl -EHsc SimpleLineGraphPlotter/SimpleLineGraphPlotter.c Lines/Line.c SimpleLineGraph/SimpleLineGraph.c SimpleBarGraph/SimpleBarGraph.c
-
-cl -EHsc SimpleLineGraphPlotter/SimpleLineGraphPlotter.c SimpleLineGraph/SimpleLineGraph.c ScaleLines/ScaleLines.c Error/Errors.c CoOrdinateAxis/CoOrdinateAxis.c GenericDCLL/GDCLL.c
-
+cl -EHsc SimpleLineGraphPlotter/SimpleLineGraphPlotter.c SimpleLineGraph/SimpleLineGraph.c ScaleLines/ScaleLines.c Error/Errors.c CoOrdinateAxis/CoOrdinateAxis.c GenericDCLL/GDCLL.c HetroTree/BST.c HetroTree/MemoryAllocator.c
 
 
-cl /LD Bars/Bars.c CoOrdinateAxis/CoOrdinateAxis.c ScaleLines/ScaleLines.c SimpleBarGraph/SimpleBarGraph.c Error/Errors.c GenericDCLL/GDCLL.c HetroTree/BST.c HetroTree/MemoryAllocator.c
+---------------------------------- Scatter Graph ------------------------------------------
+
+cl -EHsc SimpleScatterGraph/SimpleScatterGraph.c SimpleScatterGraphPlotter/SimpleScatterGraphPlotter.c ScaleLines/ScaleLines.c Error/Errors.c CoOrdinateAxis/CoOrdinateAxis.c GenericDCLL/GDCLL.c HetroTree/BST.c HetroTree/MemoryAllocator.c
