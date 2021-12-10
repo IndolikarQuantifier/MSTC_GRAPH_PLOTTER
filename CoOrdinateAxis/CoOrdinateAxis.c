@@ -208,7 +208,7 @@ status GetScale(const key_t hCoOrdinateAxis,LPCOORDINATEAXIS OutCoOrdinateAxis)
             Optimize the drawing algorithm for CoOrdinateAxis VSCROLL and HSCROLL
 */
 
-status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const key_t hCoOrdinateAxis,scrollOption option,int vPos,int hPos)
+status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const key_t hCoOrdinateAxis,scrollOption option,int vPos,int hPos,int wndWidth)
 {
 
     bst_node_t* treenode = NULL;
@@ -229,6 +229,10 @@ status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const key_t hCoOrdinateAxis,sc
     memcpy(&P3,OX,sizeof(POINT));
 
     int PPI = GetDeviceCaps(hdc,LOGPIXELSY);
+
+    // static CHAR buff[500];
+    // wsprintf(buff,"OX.x : %d",OX->x);
+    // MessageBox((HWND)NULL,buff,"WM_SIZE",MB_ICONERROR);
 
     if(option & AX_VSCROLL)
     {
@@ -316,10 +320,10 @@ status DrawCoOrdinateAxis(HDC hdc,PPAINTSTRUCT ps,const key_t hCoOrdinateAxis,sc
         LineTo(hdc,P3.x,P3.y);
 
         SetTextAlign(hdc,TA_CENTER);
-        TextOut(hdc,P3.x / 2,lpCoOrdinate->Origin->y + AX_OFFSET,lpCoOrdinate->TitleX,lpCoOrdinate->XTitleLength);
+        TextOut(hdc,wndWidth / 2,lpCoOrdinate->Origin->y + AX_OFFSET,lpCoOrdinate->TitleX,lpCoOrdinate->XTitleLength);
 
         // static CHAR buff[500];
-        // wsprintf(buff,"P1.x : %d P3.x : %d hPos : %d OX->x : %d",O->x,P3.x,hPos,Ox);
+        // wsprintf(buff,"P3.x : %d hPos : %d rcPaint : %d OX->x : %d",P3.x,hPos,ps->rcPaint.right,OX->x);
         // MessageBox((HWND)NULL,buff,"WM_SIZE",MB_ICONERROR);
     }
 
